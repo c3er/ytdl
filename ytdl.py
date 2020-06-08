@@ -22,6 +22,8 @@ class Video:
             "*": "~",
             "?": "",
             '"': "",
+            "'": "",
+            ",": "",
             "<": "(",
             ">": ")",
             "|": "@",
@@ -55,6 +57,9 @@ def main():
     log(f"Downloading {video_count} videos...")
     for i, v in enumerate(videos):
         filename = f"{str(i + 1).rjust(digit_count, '0')} {v.filename}"
+        if os.path.exists(os.path.join(outdir, f"{filename}.mp4")):
+            log(f'Video "{v.title}" does already exist.')
+            continue
         log(f'Download video "{v.title}"...', end="\t")
         (pytube.YouTube(v.link)
             .streams
