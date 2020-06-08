@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import traceback
 
 import pytube
 
@@ -44,9 +45,9 @@ class Video:
             ]))
 
 
-def log(*msg, sep=" ", end="\n"):
-    print(*msg, sep=sep, end=end)
-    sys.stdout.flush()
+def log(*msg, sep=" ", end="\n", file=sys.stdout):
+    print(*msg, sep=sep, end=end, file=file)
+    file.flush()
 
 
 def main():
@@ -61,13 +62,18 @@ def main():
             log(f'Video "{v.title}" does already exist.')
             continue
         log(f'Download video "{v.title}"...', end="\t")
-        (pytube.YouTube(v.link)
-            .streams
-            .filter(mime_type="video/mp4")
-            .order_by("audio_codec")
-            .order_by('resolution')[-1]
-            .download(output_path=outdir, filename=filename))
-        log("Done")
+        try:
+            (pytube.YouTube(v.link)
+                .streams
+                .filter(mime_type="video/mp4")
+                .order_by("audio_codec")
+                .order_by('resolution')[-1]
+                .download(output_path=outdir, filename=filename))
+            log("Done")
+        except Exception:
+            log("Error", file=sys.stderr)
+            log(traceback.format_exc(), file=sys.stderr)
+
 
 
 if __name__ == "__main__":
