@@ -4,6 +4,7 @@ import sys
 import traceback
 
 import pytube
+import pytube.helpers
 
 
 starterdir = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -16,24 +17,7 @@ class Video:
 
     @property
     def filename(self):
-        forbidden = {
-            "/": "-",
-            "\\": "-",
-            ":": ";",
-            "*": "~",
-            "?": "",
-            '"': "",
-            "'": "",
-            ",": "",
-            "<": "(",
-            ">": ")",
-            "|": "@",
-        }
-        chars = list(self.title)
-        for i, c in enumerate(chars):
-            if c in forbidden.keys():
-                chars[i] = forbidden[c]
-        return f"{''.join(chars)}"
+        return pytube.helpers.safe_filename(self.title)
 
     @classmethod
     def collect(cls, path):
