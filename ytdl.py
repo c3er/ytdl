@@ -19,6 +19,8 @@ def main():
     video_count = len(videos)
     digit_count = len(str(video_count))
     log(f"Downloading {video_count} videos...")
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
     for i, v in enumerate(videos):
         filename = f"{str(i + 1).rjust(digit_count, '0')} {v.filename}"
         if os.path.exists(os.path.join(outdir, f"{filename}.mp4")):
