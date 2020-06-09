@@ -1,32 +1,11 @@
-import json
 import os
 import sys
 import traceback
 
-import pytube
-import pytube.helpers
+import video
 
 
 starterdir = os.path.dirname(os.path.realpath(sys.argv[0]))
-
-
-class Video:
-    def __init__(self, title, link):
-        self.title = title
-        self.link = link
-
-    @property
-    def filename(self):
-        return pytube.helpers.safe_filename(self.title)
-
-    @classmethod
-    def collect(cls, path):
-        datafile = os.path.join(starterdir, path)
-        with open(datafile, encoding="utf8") as f:
-            return list(reversed([
-                cls(v["title"], v["link"])
-                for v in json.load(f)
-            ]))
 
 
 def log(*msg, sep=" ", end="\n", file=sys.stdout):
@@ -36,7 +15,7 @@ def log(*msg, sep=" ", end="\n", file=sys.stdout):
 
 def main():
     outdir = sys.argv[1]
-    videos = Video.collect(os.path.join(starterdir, "videos.json"))
+    videos = video.Video.collect(os.path.join(starterdir, "videos.json"))
     video_count = len(videos)
     digit_count = len(str(video_count))
     log(f"Downloading {video_count} videos...")
@@ -47,12 +26,7 @@ def main():
             continue
         log(f'Download video "{v.title}"...', end="\t")
         try:
-            (pytube.YouTube(v.link)
-                .streams
-                .filter(mime_type="video/mp4")
-                .order_by("audio_codec")
-                .order_by('resolution')[-1]
-                .download(output_path=outdir, filename=filename))
+            v.download(outdir, filename)
             log("Done")
         except Exception:
             log("Error", file=sys.stderr)
