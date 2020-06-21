@@ -3,6 +3,7 @@ import os
 import sys
 import traceback
 
+import progress
 import video
 
 
@@ -15,17 +16,18 @@ def log(*msg, sep=" ", end="\n", file=sys.stdout):
 
 
 def error(*msg, shall_exit=True):
+    progress.complete()
     log(*msg, file=sys.stderr)
     if shall_exit:
         sys.exit(1)
 
 
 def download_progress_handler(fileinfo, completed, remaining):
-    log(f'{fileinfo.filetype.label.title()}: "{fileinfo.path}"\t{(completed / (remaining + completed)) * 100}%')
+    progress.progress(completed, remaining + completed, fileinfo.filetype.label)
 
 
 def download_completed_handler(fileinfo):
-    log(f'"{fileinfo.path}" downloaded')
+    progress.complete(f'"{fileinfo.path}" downloaded')
 
 
 def main():
