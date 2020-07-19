@@ -75,7 +75,7 @@ class Video:
                 self._fileinfo.set(FileType.VIDEO, os.path.join(tmpdirname, "video.mp4"))
                 video.download(output_path=tmpdirname, filename="video")
 
-                self._fileinfo.set(FileType.VIDEO, os.path.join(tmpdirname, "audio.mp4"))
+                self._fileinfo.set(FileType.AUDIO, os.path.join(tmpdirname, "audio.mp4"))
                 (streams
                     .get_audio_only()
                     .download(output_path=tmpdirname, filename="audio"))
