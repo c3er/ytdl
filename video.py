@@ -13,16 +13,16 @@ _on_download_completed = None
 
 
 class FileType(enum.Enum):
+    UNKNOWN = enum.auto()
     VIDEO = enum.auto()
     AUDIO = enum.auto()
-    UNKNOWN = enum.auto()
 
     @property
     def label(self):
         return {
+            self.UNKNOWN: "unknown",
             self.VIDEO: "video",
             self.AUDIO: "audio",
-            self.UNKNOWN: "unknown",
         }[self]
 
 
