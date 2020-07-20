@@ -17,6 +17,9 @@ class Bandwidth:
     MICROSECOND = 1000000
 
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.completed = 0
         self.per_second = 0
         self._chunks_per_second = 0
@@ -55,6 +58,7 @@ def download_progress_handler(fileinfo, completed, remaining):
 
 def download_completed_handler(fileinfo):
     progress.complete(f'"{fileinfo.path}" downloaded')
+    _bandwidth.reset()
 
 
 def main():
