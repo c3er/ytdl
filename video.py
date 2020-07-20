@@ -106,7 +106,9 @@ class Video:
             progress_handler(cls._fileinfo, completed, bytes_remaining)
 
         def on_complete_callback(stream, file_path):
+            nonlocal completed
             completed_handler(cls._fileinfo)
+            completed = 0
 
         _on_download_progress = on_progress_callback
         _on_download_completed = on_complete_callback
