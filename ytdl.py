@@ -85,7 +85,7 @@ def main():
                 v.download(outdir, filename)
             except Exception:
                 error("Error", shall_exit=False)
-                error(traceback.format_exc())
+                error(traceback.format_exc(), shall_exit=False)
     except KeyboardInterrupt:
         error("Aborted")
 
