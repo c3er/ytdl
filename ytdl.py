@@ -1,3 +1,4 @@
+import datetime
 import math
 import os
 import sys
@@ -8,6 +9,35 @@ import video
 
 
 starterdir = os.path.dirname(os.path.realpath(sys.argv[0]))
+
+_bandwidth = None
+
+
+class Bandwidth:
+    MICROSECOND = 1000000
+
+    def __init__(self):
+        self.completed = 0
+        self.per_second = 0
+        self._time = self._oldtime = datetime.datetime.now()
+
+    def update(self, completed):
+        chunk = completed - self.completed
+        self.completed = completed
+
+        self._oldtime = self._time
+        self._time = datetime.datetime.now()
+        timediff = self._to_microseconds(self._time - self._oldtime)
+
+        try:
+            self.per_second = (chunk / timediff) * self.MICROSECOND
+        except ZeroDivisionError:
+            pass
+
+        return self.per_second
+
+    def _to_microseconds(self, timedelta):
+        return (timedelta.days * 24 * 3600 + timedelta.seconds) * self.MICROSECOND + timedelta.microseconds
 
 
 def log(*msg, sep=" ", end="\n", file=sys.stdout):
@@ -23,7 +53,10 @@ def error(*msg, shall_exit=True):
 
 
 def download_progress_handler(fileinfo, completed, remaining):
-    progress.progress(completed, remaining + completed, fileinfo.filetype.label)
+    progress.progress(
+        completed,
+        remaining + completed,
+        f"{_bandwidth.update(completed) / 1024 :.2f} kB/s")
 
 
 def download_completed_handler(fileinfo):
@@ -31,8 +64,10 @@ def download_completed_handler(fileinfo):
 
 
 def main():
+    global _bandwidth
     try:
         outdir = sys.argv[1]
+        _bandwidth = Bandwidth()
         videos = video.Video.collect(
             os.path.join(starterdir, "videos.json"),
             download_progress_handler,
