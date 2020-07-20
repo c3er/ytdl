@@ -19,25 +19,19 @@ class Bandwidth:
     def __init__(self):
         self.completed = 0
         self.per_second = 0
+        self._chunks_per_second = 0
         self._time = self._oldtime = datetime.datetime.now()
 
     def update(self, completed):
-        chunk = completed - self.completed
+        time = datetime.datetime.now()
+        if (time - self._oldtime).seconds < 1:
+            self._chunks_per_second += completed - self.completed
+        else:
+            self._oldtime = time
+            self.per_second = self._chunks_per_second
+            self._chunks_per_second = 0
         self.completed = completed
-
-        self._oldtime = self._time
-        self._time = datetime.datetime.now()
-        timediff = self._to_microseconds(self._time - self._oldtime)
-
-        try:
-            self.per_second = (chunk / timediff) * self.MICROSECOND
-        except ZeroDivisionError:
-            pass
-
         return self.per_second
-
-    def _to_microseconds(self, timedelta):
-        return (timedelta.days * 24 * 3600 + timedelta.seconds) * self.MICROSECOND + timedelta.microseconds
 
 
 def log(*msg, sep=" ", end="\n", file=sys.stdout):
