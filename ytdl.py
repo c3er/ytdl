@@ -57,7 +57,7 @@ def download_progress_handler(fileinfo, completed, remaining):
 
 
 def download_completed_handler(fileinfo):
-    progress.complete(f'"{fileinfo.path}" downloaded')
+    progress.complete(f'"{fileinfo.path}" downloaded\n')
     _bandwidth.reset()
 
 
