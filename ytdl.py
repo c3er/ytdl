@@ -62,6 +62,7 @@ def download_completed_handler(fileinfo):
 
 
 def main():
+    MAX_TRIES = 10
     global _bandwidth
     try:
         outdir = sys.argv[1]
@@ -81,11 +82,18 @@ def main():
                 log(f'Video "{v.title}" does already exist.')
                 continue
             log(f'Download video "{v.title}"...')
-            try:
-                v.download(outdir, filename)
-            except Exception:
-                error("Error", shall_exit=False)
-                error(traceback.format_exc(), shall_exit=False)
+
+            succeeded = False
+            try_count = 0
+            while not succeeded and try_count < MAX_TRIES:
+                try:
+                    v.download(outdir, filename)
+                except Exception:
+                    error("Error", shall_exit=False)
+                    error(traceback.format_exc(), shall_exit=False)
+                    try_count += 1
+                else:
+                    succeeded = True
     except KeyboardInterrupt:
         error("Aborted")
 
